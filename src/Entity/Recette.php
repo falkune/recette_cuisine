@@ -40,6 +40,9 @@ class Recette
     #[ORM\OneToMany(targetEntity: Commentaire::class, mappedBy: 'recette')]
     private Collection $commentaires;
 
+    #[ORM\ManyToOne(inversedBy: 'recettes')]
+    private ?User $user = null;
+
    
 
     public function __construct()
@@ -154,6 +157,18 @@ class Recette
                 $commentaire->setRecette(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }

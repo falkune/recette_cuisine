@@ -5,7 +5,18 @@
 {% block body %}
 
 <div class="container">
-    <h1>Home Page<h1/>
+    {% for recette in recettes %}
+        <div class="card" style="width: 18rem;">
+            <img src="uploads/{{ asset(recette.getUrlImg) }}" class="card-img-top" alt="{{recette.titre}}">
+            <div class="card-body">
+                <h5 class="card-title">{{ recette.titre }}</h5>
+                <div class="d-flex justify-content-between">
+                    <a href="{{ path('app_recette', {'id' : recette.id} ) }}" class="btn btn-primary">Voir details</a>
+                    <a href="{{ path('app_like', {'id': recette.id}) }}" class="btn btn-primary"><i class="fa-solid fa-thumbs-up"></i> {{ recette.users | length }}</a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
 </div>
 
 {% endblock %}
