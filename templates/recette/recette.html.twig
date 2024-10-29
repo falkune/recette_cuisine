@@ -4,16 +4,32 @@
 
 {% block body %}
     <div class="container">
-        <div class="card mb-3">
-            <div class="img-card">
-                <img src="{{ asset('uploads/' ~ recette.getUrlImg) }}" class="card-img-top" alt="{{recette.titre}}">
+    
+        <div class="card mb-3" style="max-width: 540px;">
+            <div class="row g-0">
+                <div class="col-md-4">
+                    <img src="{{ asset('uploads/' ~ recette.getUrlImg) }}" class="card-img-top" alt="{{recette.titre}}">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h5 class="card-title">{{recette.titre}}</h5>
+                        <p class="card-text">{{recette.description}}</p>
+                        <a href="{{ path('app_like', {'id': recette.id}) }}" class="btn btn-primary"><i class="fa-solid fa-thumbs-up"></i> {{ recette.users | length }}</a>
+                    </div>
+                </div>
+
+                <div>
+                    {{ form_start(form) }}
+
+                    {{ form_end(form) }}
+                </div>
             </div>
-            <div class="card-body">
-                <h5 class="card-title">{{recette.titre}}</h5>
-                <p class="card-text">{{recette.description}}</p>
-                <p>Publier par: <em>{{recette.user.prenom}} {{recette.user.nom}}</em></p>
-                <a href="{{ path('app_like', {'id': recette.id}) }}" class="btn btn-primary"><i class="fa-solid fa-thumbs-up"></i> {{ recette.users | length }}</a>
-            </div>
+        </div>
+        <div>
+            {% for commentaire in recette.commentaires %}
+                <p>{{commentaire.content}}</p>
+                <p>Commentaire ecrit par :{{commentaire.user.prenom}}</p>
+            {% endfor %}
         </div>
     </div>
 {% endblock %}

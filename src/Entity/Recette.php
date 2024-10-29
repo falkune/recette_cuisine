@@ -37,7 +37,7 @@ class Recette
     /**
      * @var Collection<int, Commentaire>
      */
-    #[ORM\OneToMany(targetEntity: Commentaire::class, mappedBy: 'recette')]
+    #[ORM\OneToMany(targetEntity: Commentaire::class, mappedBy: 'recette', cascade: ['remove'])]
     private Collection $commentaires;
 
     #[ORM\ManyToOne(inversedBy: 'recettes')]

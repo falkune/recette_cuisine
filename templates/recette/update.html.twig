@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} Creer une recette {% endblock %}
+
+{% block body %}
+<div class="container">
+    {{ form_start(form) }}
+        {{ form_label(form.titre) }}
+        {{ form_widget(form.titre, {'attr': {'value': recette.titre}}) }}
+
+        {{ form_label(form.description) }}
+        {{ form_widget(form.description, {'attr': {'content': recette.description}}) }}
+    {{ form_end(form) }}
+</div>
+{% endblock %}

@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\Form\CommentaireType;
 use App\Form\RecetteType;
+use App\Form\UpdateType;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -60,9 +62,14 @@ class RecetteController extends AbstractController {
 
     #[Route('like/{id}', name: 'app_like')]
     public function like(int $id, EntityManagerInterface $em, RecetteRepository $repository){
-        $recette = $repository->find($id); // la recette a liker
 
         $user = $this->getUser(); // l'utilisateur qui veu liker
+
+        if(!$user){
+            return $this->redirectToRoute('app_login');
+        }
+
+        $recette = $repository->find($id); // la recette a liker
 
         $recette->addUser($user); // ajout de l'utilisateur dans les likeurs de recette
 
@@ -73,12 +80,67 @@ class RecetteController extends AbstractController {
     }
 
     #[Route('/recette/{id}', name: 'app_recette')]
-    public function recette(int $id, EntityManagerInterface $em, RecetteRepository $repository){
-        $recette = $repository->find($id); 
+    public function recette(int $id, EntityManagerInterface $em, RecetteRepository $repository, Request $request){
+        $recette = $repository->find($id);
+
+        $form = $this->createForm(CommentaireType::class);
+
+        $form->handleRequest($request);
+
+        if($form->isSubmitted()){
+            $commentaire = $form->getData();
+            $user = $this->getUser();
+            $commentaire->setUser($user);
+            $commentaire->setRecette($recette);
+
+            $em->persist($commentaire);
+            $em->flush();
+
+            return $this->redirectToRoute('app_home');
+
+        }
 
 
         return $this->render('recette/recette.html.twig', [
+            'recette' => $recette,
+            'form' => $form
+        ]);
+    }
+
+    #[Route('/delete/{id}', name: 'app_delete')]
+    public function delete(int $id, EntityManagerInterface $em, RecetteRepository $repository){
+        $recette = $repository->find($id);
+
+        $em->remove($recette);
+        $em->flush();
+
+        return $this->redirectToRoute('app_home');
+    }
+
+
+    #[Route('update/{id}', name: 'app_update')]
+    public function update(int $id, EntityManagerInterface $em, RecetteRepository $repository, Request $request){
+        $form = $this->createForm(UpdateType::class);
+        $recette = $repository->find($id);
+
+        $form->handleRequest($request);
+
+        if($form->isSubmitted()){
+            $updateRecette = $form->getData();
+
+            $recette->setTitre($updateRecette->getTitre());
+            $recette->setDescription($updateRecette->getDescription());
+
+            $em->flush();
+
+            return $this->redirectToRoute('app_home');
+        }
+        
+        return $this->render('recette/update.html.twig', [
+            'form' => $form,
             'recette' => $recette
         ]);
     }
 }
+
+
